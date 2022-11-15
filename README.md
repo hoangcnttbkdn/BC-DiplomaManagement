@@ -24,3 +24,37 @@ Rank: xếp loại (giỏi, khá, ...) \
 ModeOfStudy: hệ (Chính quy, từ xa, ...) \
 RegNo: số vào sổ cấp bằng (k33-035,...) \
 UrlImage: link hỉnh ảnh của văn bằng 
+
+# API
+
+- Create a `.env` file from the `example.env` file
+
+  ```
+  cp example.env .env
+  ```
+
+- Install package
+
+  ```
+  npm i
+  ```
+
+- Change name of wallet in api/utils/blockchain.js
+
+- Build and run docker compose
+
+  ```
+  docker-compose up --build -d
+  ```
+
+- Run API in development
+
+  ```
+  npm run dev
+  ```
+
+- Run API in production
+
+  ```
+  npm start
+  ```
