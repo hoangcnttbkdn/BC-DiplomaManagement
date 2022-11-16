@@ -13,9 +13,14 @@ module.exports = new EntitySchema({
     },
     username: {
       type: 'varchar',
+      unique: true,
     },
     password: {
       type: 'varchar',
+    },
+    role: {
+      type: 'enum',
+      enum: ['superadmin', 'admin'],
     },
   },
 });

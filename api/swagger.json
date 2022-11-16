@@ -1,0 +1,469 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Diploma management API",
+    "termsOfService": "http://jthanh8144.tk",
+    "contact": {
+      "email": "thanhvo618@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "admins",
+      "description": "Login admin, register admin"
+    },
+    {
+      "name": "diplomas",
+      "description": "CRUD diploma"
+    }
+  ],
+  "paths": {
+    "/admins/login": {
+      "post": {
+        "tags": [
+          "admins"
+        ],
+        "summary": "Login admin",
+        "description": "Login admin with username and password",
+        "operationId": "loginAdmin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginAdmin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginAdminSuccess"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Username or password is incorrect"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/admins/register": {
+      "post": {
+        "tags": [
+          "admins"
+        ],
+        "summary": "Login admin",
+        "description": "Login admin with username and password",
+        "operationId": "registerAdmin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterAdmin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Username is exist"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/diplomas": {
+      "get": {
+        "description": "No limit permission",
+        "tags": [
+          "diplomas"
+        ],
+        "summary": "Get all diplomas",
+        "operationId": "getAllDiplomas",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayDiploma"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "diplomas"
+        ],
+        "summary": "Update diploma by code",
+        "description": "Admin permission",
+        "operationId": "createDiploma",
+        "requestBody": {
+          "description": "Create diploma",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Diploma"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/diplomas/{code}": {
+      "get": {
+        "description": "No limit permission",
+        "tags": [
+          "diplomas"
+        ],
+        "summary": "Get diploma by code",
+        "operationId": "getDiplomaByCode",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "Code of diploma",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Diploma"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "diplomas"
+        ],
+        "summary": "Update diploma by code",
+        "description": "Admin permission",
+        "operationId": "updateDiploma",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Update an existent user in the store",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDiploma"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "diplomas"
+        ],
+        "summary": "Delete diploma by code",
+        "description": "Super admin permission only",
+        "operationId": "deleteDiploma",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/diplomas/sync": {
+      "get": {
+        "description": "Super admin permission only",
+        "tags": [
+          "diplomas"
+        ],
+        "summary": "Sync diploma from chain code",
+        "operationId": "syncDiploma",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginAdmin": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "thanh"
+          },
+          "password": {
+            "type": "string",
+            "example": "thanh"
+          }
+        }
+      },
+      "LoginAdminSuccess": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "ey..."
+          },
+          "username": {
+            "type": "string",
+            "example": "thanh"
+          }
+        }
+      },
+      "RegisterAdmin": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "thanh"
+          },
+          "password": {
+            "type": "string",
+            "example": "thanh"
+          },
+          "role": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      },
+      "Diploma": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "12345abc"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "Vo Van Thanh"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "example": "01/11/2001"
+          },
+          "certificate": {
+            "type": "string",
+            "example": "Bằng tốt nghiệp Đại học"
+          },
+          "speciality": {
+            "type": "string",
+            "example": "Công nghệ thông tin"
+          },
+          "graduationYear": {
+            "type": "string",
+            "example": 2023
+          },
+          "school": {
+            "type": "string",
+            "example": "Đại học Bách Khoa"
+          },
+          "rank": {
+            "type": "string",
+            "example": "Giỏi"
+          },
+          "modeOfStudy": {
+            "type": "string",
+            "example": "Chính quy"
+          },
+          "regNo": {
+            "type": "string",
+            "example": "k53-861"
+          },
+          "urlImage": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "UpdateDiploma": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Vo Van Thanh"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "example": "01/11/2001"
+          },
+          "certificate": {
+            "type": "string",
+            "example": "Bằng tốt nghiệp Đại học"
+          },
+          "speciality": {
+            "type": "string",
+            "example": "Công nghệ thông tin"
+          },
+          "graduationYear": {
+            "type": "string",
+            "example": 2023
+          },
+          "school": {
+            "type": "string",
+            "example": "Đại học Bách Khoa"
+          },
+          "rank": {
+            "type": "string",
+            "example": "Giỏi"
+          },
+          "modeOfStudy": {
+            "type": "string",
+            "example": "Chính quy"
+          },
+          "regNo": {
+            "type": "string",
+            "example": "k53-861"
+          },
+          "urlImage": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "ArrayDiploma": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Diploma"
+        }
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

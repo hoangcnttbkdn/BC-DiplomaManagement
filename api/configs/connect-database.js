@@ -1,4 +1,5 @@
 const typeorm = require('typeorm');
+const { hashPassword } = require('../utils/hash-password');
 
 const dataSource = new typeorm.DataSource({
   type: 'postgres',
@@ -18,6 +19,17 @@ const connectDB = async () => {
   try {
     await dataSource.initialize();
     console.log('Connect DB success');
+    const adminRepository = dataSource.getRepository('Admin');
+    const users = await adminRepository.find();
+    if (users.length === 0) {
+      await adminRepository.save(
+        adminRepository.create({
+          username: 'admin',
+          password: hashPassword('admin'),
+          role: 'superadmin',
+        })
+      );
+    }
   } catch (err) {
     console.log(err);
     console.log('Connect DB fail');

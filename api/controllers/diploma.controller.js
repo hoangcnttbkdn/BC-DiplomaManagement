@@ -6,7 +6,7 @@ const { connectBC } = require('../utils/blockchain');
 const { convertResult } = require('../utils/convert-result');
 
 const diplomaController = {
-  syncData: async (req, res, next) => {
+  syncData: async (req, res) => {
     try {
       const { contract } = await connectBC();
       let result = await contract.evaluateTransaction('GetAllDiplomas');
@@ -37,7 +37,7 @@ const diplomaController = {
         .json({ message: error.message });
     }
   },
-  getAllDiplomas: async (req, res, next) => {
+  getAllDiplomas: async (req, res) => {
     try {
       // const { contract } = await connectBC();
       // const result = await contract.evaluateTransaction('GetAllDiplomas');
@@ -51,7 +51,7 @@ const diplomaController = {
         .json({ message: error.message });
     }
   },
-  getDiplomaByCode: async (req, res, next) => {
+  getDiplomaByCode: async (req, res) => {
     try {
       const { code } = req.params;
       // const { contract } = await connectBC();
@@ -66,7 +66,7 @@ const diplomaController = {
         .json({ message: error.message });
     }
   },
-  createDiploma: async (req, res, next) => {
+  createDiploma: async (req, res) => {
     try {
       const data = req.body;
       const { contract } = await connectBC();
@@ -93,13 +93,14 @@ const diplomaController = {
         .json({ message: error.message });
     }
   },
-  updateDiploma: async (req, res, next) => {
+  updateDiploma: async (req, res) => {
     try {
+      const { code } = req.params;
       const data = req.body;
       const { contract } = await connectBC();
       await contract.submitTransaction(
         'UpdateDiploma',
-        data.code,
+        code,
         data.fullName,
         data.dateOfBirth,
         data.certificate,
@@ -116,7 +117,7 @@ const diplomaController = {
         .update()
         .set({ ...data })
         .where('code = :code')
-        .setParameters({ code: data.code })
+        .setParameters({ code })
         .execute();
       res.status(StatusCodes.OK).json({ message: 'Update diploma success!' });
     } catch (error) {
@@ -126,7 +127,7 @@ const diplomaController = {
         .json({ message: error.message });
     }
   },
-  deleteDiploma: async (req, res, next) => {
+  deleteDiploma: async (req, res) => {
     try {
       const { code } = req.params;
       const { contract } = await connectBC();
