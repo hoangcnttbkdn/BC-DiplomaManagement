@@ -56,6 +56,9 @@ const adminController = {
         .json({ message: error.message });
     }
   },
+  profile: async (req, res) => {
+    res.status(StatusCodes.OK).json({ id: req.userId, username: req.username });
+  },
 };
 
 module.exports = { adminController };

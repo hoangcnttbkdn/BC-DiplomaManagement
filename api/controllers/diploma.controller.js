@@ -1,6 +1,8 @@
 const { StatusCodes } = require('http-status-codes');
+const { plainToInstance } = require('class-transformer');
 
 const { diplomaRepository } = require('../database/repositories');
+const { dataSource } = require('../configs/connect-database');
 const { Diploma } = require('../database/models/diploma');
 const { connectBC } = require('../utils/blockchain');
 const { convertResult } = require('../utils/convert-result');
@@ -16,6 +18,7 @@ const diplomaController = {
           item['ID'],
           item['Fullname'],
           item['DateOfBirth'],
+          item['Gender'],
           item['Certificate'],
           item['Speciality'],
           item['GraduationYear'],
@@ -23,7 +26,8 @@ const diplomaController = {
           item['Rank'],
           item['ModeOfStudy'],
           item['RegNo'],
-          item['UrlImage']
+          item['UrlImage'],
+          item['Status'] === 'true'
         );
       });
       diplomaRepository.save(data);
@@ -42,6 +46,7 @@ const diplomaController = {
       // const { contract } = await connectBC();
       // const result = await contract.evaluateTransaction('GetAllDiplomas');
       // res.status(StatusCodes.OK).json(convertResult(result));
+
       const data = await diplomaRepository.find();
       res.status(StatusCodes.OK).json(data);
     } catch (error) {
@@ -57,6 +62,7 @@ const diplomaController = {
       // const { contract } = await connectBC();
       // const result = await contract.evaluateTransaction('ReadDiploma', code);
       // res.status(StatusCodes.OK).json(convertResult(result));
+
       const data = await diplomaRepository.findOne({ where: { code } });
       res.status(StatusCodes.OK).json(data);
     } catch (error) {
@@ -67,14 +73,19 @@ const diplomaController = {
     }
   },
   createDiploma: async (req, res) => {
+    const queryRunner = dataSource.createQueryRunner();
+    queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
       const data = req.body;
+      console.log(data);
       const { contract } = await connectBC();
       await contract.submitTransaction(
         'CreateDiploma',
         data.code,
         data.fullName,
         data.dateOfBirth,
+        data.gender,
         data.certificate,
         data.speciality,
         data.graduationYear,
@@ -82,15 +93,21 @@ const diplomaController = {
         data.rank,
         data.modeOfStudy,
         data.regNo,
-        data.urlImage
+        data.urlImage,
+        data.status
       );
-      await diplomaRepository.save(data);
+      data.status = data.status === 'true';
+      await queryRunner.manager.save(plainToInstance(Diploma, data));
+      await queryRunner.commitTransaction();
       res.status(StatusCodes.OK).json({ message: 'Create diploma success!' });
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       console.log(error);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: error.message });
+    } finally {
+      await queryRunner.release();
     }
   },
   updateDiploma: async (req, res) => {
@@ -103,6 +120,7 @@ const diplomaController = {
         code,
         data.fullName,
         data.dateOfBirth,
+        data.gender,
         data.certificate,
         data.speciality,
         data.graduationYear,
@@ -110,7 +128,8 @@ const diplomaController = {
         data.rank,
         data.modeOfStudy,
         data.regNo,
-        data.urlImage
+        data.urlImage,
+        data.status.toString()
       );
       await diplomaRepository
         .createQueryBuilder()
@@ -140,6 +159,7 @@ const diplomaController = {
         .execute();
       res.status(StatusCodes.OK).json({ message: 'Delete diploma success!' });
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       console.log(error);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)

@@ -13,15 +13,18 @@ module.exports = new EntitySchema({
     },
     code: {
       type: 'varchar',
-      unique: true
+      unique: true,
     },
     fullName: {
       type: 'varchar',
-      name: 'full_name'
+      name: 'full_name',
     },
     dateOfBirth: {
       type: 'varchar',
-      name: 'date_of_birth'
+      name: 'date_of_birth',
+    },
+    gender: {
+      type: 'varchar',
     },
     certificate: {
       type: 'varchar',
@@ -31,7 +34,7 @@ module.exports = new EntitySchema({
     },
     graduationYear: {
       type: 'varchar',
-      name: 'graduation_year'
+      name: 'graduation_year',
     },
     school: {
       type: 'varchar',
@@ -41,15 +44,18 @@ module.exports = new EntitySchema({
     },
     modeOfStudy: {
       type: 'varchar',
-      name: 'mode_of_study'
+      name: 'mode_of_study',
     },
     regNo: {
       type: 'varchar',
-      name: 'reg_no'
+      name: 'reg_no',
     },
     urlImage: {
       type: 'text',
-      name: 'url_image'
+      name: 'url_image',
+    },
+    status: {
+      type: 'boolean',
     },
   },
 });

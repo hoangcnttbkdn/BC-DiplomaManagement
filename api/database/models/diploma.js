@@ -3,6 +3,7 @@ class Diploma {
     code,
     fullName,
     dateOfBirth,
+    gender,
     certificate,
     speciality,
     graduationYear,
@@ -10,11 +11,13 @@ class Diploma {
     rank,
     modeOfStudy,
     regNo,
-    urlImage
+    urlImage,
+    status
   ) {
     this.code = code;
     this.fullName = fullName;
     this.dateOfBirth = dateOfBirth;
+    this.gender = gender;
     this.certificate = certificate;
     this.speciality = speciality;
     this.graduationYear = graduationYear;
@@ -23,6 +26,7 @@ class Diploma {
     this.modeOfStudy = modeOfStudy;
     this.regNo = regNo;
     this.urlImage = urlImage;
+    this.status = status;
   }
 }
 
