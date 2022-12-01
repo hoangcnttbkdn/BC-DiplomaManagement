@@ -1,36 +1,22 @@
 const { StatusCodes } = require('http-status-codes');
 const { plainToInstance } = require('class-transformer');
+const { ILike } = require('typeorm');
 
 const { diplomaRepository } = require('../database/repositories');
 const { dataSource } = require('../configs/connect-database');
 const { Diploma } = require('../database/models/diploma');
 const { connectBC } = require('../utils/blockchain');
-const { convertResult } = require('../utils/convert-result');
+const { convertJson, convertResult } = require('../utils/convert-result');
 
 const diplomaController = {
   syncData: async (req, res) => {
     try {
       const { contract } = await connectBC();
       let result = await contract.evaluateTransaction('GetAllDiplomas');
-      result = convertResult(result);
-      const data = Array.from(result).map((item) => {
-        return new Diploma(
-          item['ID'],
-          item['Fullname'],
-          item['DateOfBirth'],
-          item['Gender'],
-          item['Certificate'],
-          item['Speciality'],
-          item['GraduationYear'],
-          item['School'],
-          item['Rank'],
-          item['ModeOfStudy'],
-          item['RegNo'],
-          item['UrlImage'],
-          item['Status'] === 'true'
-        );
-      });
-      diplomaRepository.save(data);
+      result = convertJson(result);
+      const data = convertResult(result);
+      await diplomaRepository.clear();
+      await diplomaRepository.save(data);
       res
         .status(StatusCodes.OK)
         .json({ message: 'Sync data from chaincode to database success!' });
@@ -41,14 +27,31 @@ const diplomaController = {
         .json({ message: error.message });
     }
   },
-  getAllDiplomas: async (req, res) => {
+  getDiplomas: async (req, res) => {
     try {
-      // const { contract } = await connectBC();
-      // const result = await contract.evaluateTransaction('GetAllDiplomas');
-      // res.status(StatusCodes.OK).json(convertResult(result));
-
-      const data = await diplomaRepository.find();
-      res.status(StatusCodes.OK).json(data);
+      const { name, code } = req.query;
+      if (name) {
+        const response = [];
+        const diplomas = await diplomaRepository.find({
+          where: { fullName: ILike(`%${name}%`) },
+        });
+        const { contract } = await connectBC();
+        for (const item of diplomas) {
+          const result = await contract.evaluateTransaction(
+            'ReadDiploma',
+            item.code
+          );
+          response.push(convertJson(result));
+        }
+        res.status(StatusCodes.OK).json(convertResult(response));
+      } else if (code) {
+        const result = await contract.evaluateTransaction('ReadDiploma', code);
+        res.status(StatusCodes.OK).json([convertResult(result)]);
+      } else {
+        const { contract } = await connectBC();
+        const result = await contract.evaluateTransaction('GetAllDiplomas');
+        res.status(StatusCodes.OK).json(convertResult(convertJson(result)));
+      }
     } catch (error) {
       console.log(error);
       res
@@ -59,12 +62,9 @@ const diplomaController = {
   getDiplomaByCode: async (req, res) => {
     try {
       const { code } = req.params;
-      // const { contract } = await connectBC();
-      // const result = await contract.evaluateTransaction('ReadDiploma', code);
-      // res.status(StatusCodes.OK).json(convertResult(result));
-
-      const data = await diplomaRepository.findOne({ where: { code } });
-      res.status(StatusCodes.OK).json(data);
+      const { contract } = await connectBC();
+      const result = await contract.evaluateTransaction('ReadDiploma', code);
+      res.status(StatusCodes.OK).json(convertJson(result));
     } catch (error) {
       console.log(error);
       res

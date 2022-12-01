@@ -14,6 +14,23 @@ adminRouter.post(
   adminController.register
 );
 adminRouter.post('/login', adminController.login);
-adminRouter.get('/', authenticationMiddleware, adminController.profile);
+
+adminRouter.get('/profile', authenticationMiddleware, adminController.profile);
+adminRouter.get('/:id', authenticationMiddleware, adminController.getById);
+adminRouter.get('/', authenticationMiddleware, adminController.getAll);
+
+adminRouter.put(
+  '/:id',
+  authenticationMiddleware,
+  authorizationMiddleware,
+  adminController.update
+);
+
+adminRouter.delete(
+  '/:id',
+  authenticationMiddleware,
+  authorizationMiddleware,
+  adminController.delete
+);
 
 module.exports = { adminRouter };

@@ -56,8 +56,73 @@ const adminController = {
         .json({ message: error.message });
     }
   },
-  profile: async (req, res) => {
-    res.status(StatusCodes.OK).json({ id: req.userId, username: req.username });
+  profile: (req, res) => {
+    res
+      .status(StatusCodes.OK)
+      .json({ id: req.userId, username: req.username, role: req.userRole });
+  },
+  getAll: async (req, res) => {
+    try {
+      const users = await adminRepository.find({
+        select: { id: true, username: true, role: true },
+      });
+      res.status(StatusCodes.OK).json(users);
+    } catch (error) {
+      console.log(error);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: error.message });
+    }
+  },
+  getById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const users = await adminRepository.findOne({
+        where: { id },
+        select: { id: true, username: true, role: true },
+      });
+      res.status(StatusCodes.OK).json(users);
+    } catch (error) {
+      console.log(error);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: error.message });
+    }
+  },
+  update: async (req, res) => {
+    try {
+      const { id } = req.params;
+      await adminRepository
+        .createQueryBuilder()
+        .update()
+        .set({ ...req.body })
+        .where('id = :id')
+        .setParameters({ id })
+        .execute();
+      res.status(StatusCodes.OK).json({ message: 'Update admin success!' });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: error.message });
+    }
+  },
+  delete: async (req, res) => {
+    try {
+      const { id } = req.params;
+      await adminRepository
+        .createQueryBuilder()
+        .delete()
+        .where('id = :id')
+        .setParameters({ id })
+        .execute();
+      res.status(StatusCodes.OK).json({ message: 'Delete admin success!' });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: error.message });
+    }
   },
 };
 

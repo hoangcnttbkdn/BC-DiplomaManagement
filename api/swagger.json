@@ -16,11 +16,15 @@
   "tags": [
     {
       "name": "admins",
-      "description": "Login admin, register admin"
+      "description": "API for admins"
     },
     {
       "name": "diplomas",
       "description": "CRUD diploma"
+    },
+    {
+      "name": "upload",
+      "description": "API for upload image"
     }
   ],
   "paths": {
@@ -103,14 +107,217 @@
         }
       }
     },
+    "/admins": {
+      "get": {
+        "tags": [
+          "admins"
+        ],
+        "summary": "Get all admins",
+        "description": "Get all admins",
+        "operationId": "admins",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayAdmins"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/admins/{id}": {
+      "get": {
+        "tags": [
+          "admins"
+        ],
+        "summary": "Get admin by id",
+        "description": "Get admin by id",
+        "operationId": "admin",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Code of diploma",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileAdmin"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admins"
+        ],
+        "summary": "Update admin by id",
+        "description": "Superadmin admin permission",
+        "operationId": "updateAdmin",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of admin",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Create diploma",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAdmin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admins"
+        ],
+        "summary": "Delete admin by id",
+        "description": "Superadmin admin permission",
+        "operationId": "deleteAdmin",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of admin",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/admins/profile": {
+      "get": {
+        "tags": [
+          "admins"
+        ],
+        "summary": "Profile admin",
+        "description": "Profile admin",
+        "operationId": "profileAdmin",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileAdmin"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/diplomas": {
       "get": {
         "description": "No limit permission",
         "tags": [
           "diplomas"
         ],
-        "summary": "Get all diplomas",
+        "summary": "Get all or search diplomas",
         "operationId": "getAllDiplomas",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Full name you want to search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "description": "Code of you want to search",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -131,7 +338,7 @@
         "tags": [
           "diplomas"
         ],
-        "summary": "Update diploma by code",
+        "summary": "Create diploma",
         "description": "Admin permission",
         "operationId": "createDiploma",
         "requestBody": {
@@ -309,6 +516,56 @@
           }
         }
       }
+    },
+    "/upload": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "summary": "Upload image",
+        "description": "Upload image",
+        "operationId": "upload",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "image"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Upload"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Only .png, .jpg and .jpeg format allowed! | Image is required"
+          },
+          "413": {
+            "description": "File too large"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -356,6 +613,42 @@
           }
         }
       },
+      "ProfileAdmin": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "example": "admin"
+          },
+          "role": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      },
+      "UpdateAdmin": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "example": "123abcXYZ"
+          },
+          "role": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      },
+      "ArrayAdmins": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ProfileAdmin"
+        }
+      },
       "Diploma": {
         "type": "object",
         "properties": {
@@ -371,6 +664,10 @@
             "type": "string",
             "example": "01/11/2001"
           },
+          "gender": {
+            "type": "string",
+            "example": "Nam"
+          },
           "certificate": {
             "type": "string",
             "example": "Bằng tốt nghiệp Đại học"
@@ -402,6 +699,10 @@
           "urlImage": {
             "type": "string",
             "example": ""
+          },
+          "status": {
+            "type": "boolean",
+            "example": true
           }
         }
       },
@@ -416,6 +717,10 @@
             "type": "string",
             "example": "01/11/2001"
           },
+          "gender": {
+            "type": "string",
+            "example": "Nam"
+          },
           "certificate": {
             "type": "string",
             "example": "Bằng tốt nghiệp Đại học"
@@ -447,6 +752,10 @@
           "urlImage": {
             "type": "string",
             "example": ""
+          },
+          "status": {
+            "type": "boolean",
+            "example": true
           }
         }
       },
@@ -454,6 +763,15 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/Diploma"
+        }
+      },
+      "Upload": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://s3.jthanh8144.com/abc.png"
+          }
         }
       },
       "ApiResponse": {

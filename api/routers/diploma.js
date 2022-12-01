@@ -14,7 +14,7 @@ diplomaRouter.get(
   diplomaController.syncData
 );
 diplomaRouter.get('/:code', diplomaController.getDiplomaByCode);
-diplomaRouter.get('/', diplomaController.getAllDiplomas);
+diplomaRouter.get('/', authenticationMiddleware, diplomaController.getDiplomas);
 
 diplomaRouter.post(
   '/',
