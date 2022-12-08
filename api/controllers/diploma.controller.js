@@ -6,7 +6,11 @@ const { diplomaRepository } = require('../database/repositories');
 const { dataSource } = require('../configs/connect-database');
 const { Diploma } = require('../database/models/diploma');
 const { connectBC } = require('../utils/blockchain');
-const { convertJson, convertResult } = require('../utils/convert-result');
+const {
+  convertJson,
+  convertDiplomaType,
+  convertResult,
+} = require('../utils/convert-result');
 
 const diplomaController = {
   syncData: async (req, res) => {
@@ -30,12 +34,12 @@ const diplomaController = {
   getDiplomas: async (req, res) => {
     try {
       const { name, code } = req.query;
+      const { contract } = await connectBC();
       if (name) {
         const response = [];
         const diplomas = await diplomaRepository.find({
           where: { fullName: ILike(`%${name}%`) },
         });
-        const { contract } = await connectBC();
         for (const item of diplomas) {
           const result = await contract.evaluateTransaction(
             'ReadDiploma',
@@ -45,10 +49,17 @@ const diplomaController = {
         }
         res.status(StatusCodes.OK).json(convertResult(response));
       } else if (code) {
-        const result = await contract.evaluateTransaction('ReadDiploma', code);
-        res.status(StatusCodes.OK).json([convertResult(result)]);
+        const response = [];
+        const diploma = await diplomaRepository.findOne({ where: { code } });
+        if (diploma) {
+          const result = await contract.evaluateTransaction(
+            'ReadDiploma',
+            code
+          );
+          response.push(convertDiplomaType(convertJson(result)));
+        }
+        res.status(StatusCodes.OK).json(response);
       } else {
-        const { contract } = await connectBC();
         const result = await contract.evaluateTransaction('GetAllDiplomas');
         res.status(StatusCodes.OK).json(convertResult(convertJson(result)));
       }
@@ -64,7 +75,7 @@ const diplomaController = {
       const { code } = req.params;
       const { contract } = await connectBC();
       const result = await contract.evaluateTransaction('ReadDiploma', code);
-      res.status(StatusCodes.OK).json(convertJson(result));
+      res.status(StatusCodes.OK).json(convertDiplomaType(convertJson(result)));
     } catch (error) {
       console.log(error);
       res

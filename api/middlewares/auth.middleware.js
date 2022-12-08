@@ -5,8 +5,8 @@ const { getToken, verifyToken } = require('../utils/jwt');
 
 const authenticationMiddleware = (req, res, next) => {
   try {
-    const { name } = req.query;
-    if (name) {
+    const { name, code } = req.query;
+    if (name || code) {
       next()
       return
     }
