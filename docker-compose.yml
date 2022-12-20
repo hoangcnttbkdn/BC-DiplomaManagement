@@ -10,3 +10,33 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
     ports:
       - 5432:${DB_PORT}
+
+# version: '3.3'
+
+# services:
+#   diploma:
+#     build:
+#       dockerfile: Dockerfile
+#       context: .
+#       args:
+#         NODE_IMAGE: ${NODE_IMAGE}
+#         APP_PORT: ${APP_PORT}
+#     container_name: diploma
+#     env_file:
+#       - .env
+#     ports:
+#       - 4000:${APP_PORT}
+#     restart: always
+#     volumes:
+#       - .:/home/app
+#     extra_hosts:
+#       - "orderer.example.com:34.87.147.239"
+#       - "peer0.org1.example.com:34.87.147.239"
+#       - "peer0.org2.example.com:34.87.147.239"
+#     networks:
+#       - hana
+
+# networks:
+#   hana:
+#     name: hana
+#     external: true
